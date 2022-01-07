@@ -1,4 +1,79 @@
 import matplotlib.pyplot as plt
+from numpy.core.fromnumeric import size
+import pandas as pd 
+import numpy as np
+from scipy.sparse.construct import random 
+from pathlib import Path
+from sklearn.cluster import KMeans
+from sklearn.metrics import accuracy_score
+from scipy.cluster.hierarchy import fcluster, linkage
+import plotly
+import plotly.graph_objects as go
+import plotly.figure_factory as ff
+
+
+
+def get_number_of_clusters(data:np.array):
+    """
+    generates a plot that display the wcss score with respect to cluster number.
+
+    we determine the number of clusters we’d like to keep. 
+    To that effect, we use the Elbow-method.
+    The approach consists of looking for a kink or elbow in the WCSS graph.
+    Usually, the part of the graph before the elbow would be steeply declining, while the part after it – much smoother. In this instance, the kink comes at the 4 clusters mark. So, 
+    we’ll be keeping a four-cluster solution.
+
+    Args:
+        data (np.array): the data we want to cluster 
+
+    
+    """
+
+    WCSS =[]
+    for i in range (1,10):
+        kmean_=KMeans(n_clusters=i,init="k-means++", random_state=42)
+        kmean_.fit(data)
+        WCSS.append(kmean_.inertia_)
+    ## plot
+    plt.figure(figsize=(20,10))
+    plt.plot(range(1,10),WCSS,marker='o',linestyle='--')
+    plt.xlabel("number of clusters")
+    plt.ylabel("WCSS")
+    plt.title("")
+    plt.show()
+
+
+
+
+
+
+def random_k_samples_expression_dist(X:np.array ,k :int):
+    """[summary]
+
+    Args:
+        X (pd.DataFrame): expression level dataset
+        k (int): randomly picked sample size  
+    """
+
+   
+    
+    np.random.seed(seed=7) # Set seed so we will get consistent results
+    # Randomly select k samples
+    samples_index = np.random.choice(range(X.shape[0]), size=k, replace=False)
+    expression_levels_subset = X[samples_index,:]
+
+
+    # Bar plot of expression counts by individual
+    fig, ax = plt.subplots(figsize=(30, 15))
+    with plt.style.context("ggplot"):
+        ax.boxplot(expression_levels_subset.transpose())
+        ax.set_xlabel("samples")
+        ax.set_ylabel("Gene expression levels")
+        ax.set_title(f"gene exression levels distributions among {k} randomly picked samples " ,fontsize=18)
+        #reduce_xaxis_labels(ax, 5)
+
+
+
 
 # Some custom x-axis labelling to make our plots easier to read
 def reduce_xaxis_labels(ax, factor):
@@ -14,3 +89,246 @@ def reduce_xaxis_labels(ax, factor):
     plt.setp(ax.xaxis.get_ticklabels(), visible=False)
     for label in ax.xaxis.get_ticklabels()[factor-1::factor]:
         label.set_visible(True)
+
+
+
+def visualize_dim_reduction(reduction, title, outliers_loc=None, labels=None,
+                            figsize=(10, 10), save_dir=None, **kwargs):
+    """Utility function for visualizing the data in a lower dimensional space.
+    No matter the number of components chosen
+    the function will plot only the first 2.
+    Args:
+        - reduction(numpy array): result of dimensionality reduction.
+        - title(string): title for the plot
+        - outliers_loc(iterable): index of outlying samples
+        - labels(iterable): labels associated to each sample
+        - **kwargs: keyword arguments passed to plt.scatter()
+    Returns:
+        - None
+    """
+
+    plt.figure(figsize=figsize)
+    cdict = { 0: 'red', 1: 'blue', 2: 'green' , 3 :'brown',4 :'black'}
+    # if we have labels
+
+    if labels is not None:
+        unique_labels = np.unique(labels).flatten()
+
+        for i,unique_label in enumerate(unique_labels):
+
+            indices = np.argwhere(labels == unique_label).flatten()
+            plt.scatter(
+                reduction[indices, 0],
+                reduction[indices, 1],
+                label=unique_label,
+                c= cdict[i],
+                ** kwargs
+            )
+    else:
+        plt.scatter(
+            reduction[:, 0],
+            reduction[:, 1],
+            ** kwargs
+        )
+    # if we know where the outliers are
+    if outliers_loc is not None:
+
+        for loc in outliers_loc:
+
+            plt.scatter(
+                reduction[loc, 0],
+                reduction[loc, 1],
+                c='b',
+                ** kwargs
+            )
+            plt.annotate(
+                loc,
+                (reduction[loc, 0], reduction[loc, 1])
+            )
+
+    plt.xlabel(f'Component 1')
+    plt.ylabel(f'Component 2')
+    plt.title(title)
+    plt.legend()
+
+    plt.tight_layout()
+
+    if save_dir is not None:
+        plt.savefig(
+            f'{save_dir}\\{title}.png'
+        )
+        plt.close()
+    else:
+        plt.show()
+        plt.close()
+
+    return None
+
+
+
+def visualize_2_subplots(reduction :np.array ,labels_1,labels_2,title,
+                            figsize=(5, 10), save_dir=None, **kwargs):
+    
+    
+    fig, (ax1, ax2) = plt.subplots(1, 2,figsize=figsize)
+    ax1.set(xlabel='pc1', ylabel='pc2')
+    ax2.set(xlabel='pc1', ylabel='pc2')
+   
+    
+    fig.suptitle('PCA labled projection VS PCA kmean segment projection ')
+
+    #we crated two colors maps for visualization purposes two make the comparison easier
+    # (to have the same colors for the underlying  colors) 
+    cdict_l1 = { 0: 'red', 1: 'blue', 2: 'green' , 3 :'brown',4 :'black'}
+    cdict_l2 = { 0: 'blue', 1: 'red', 2: 'green' , 3 :'black',4 :'brown'}
+  
+ 
+    unique_labels = np.unique(labels_1).flatten()
+
+    for i,unique_label in enumerate(unique_labels):
+
+        indices = np.argwhere(labels_1 == unique_label).flatten()
+        ax1.scatter(
+            reduction[indices, 0],
+            reduction[indices, 1],
+            label=unique_label,
+            c= cdict_l1[i],
+            ** kwargs
+        )
+    
+    ax1.legend(loc='upper right')
+
+    
+    unique_labels = np.unique(labels_2).flatten()
+    
+    for i,unique_label in enumerate(unique_labels):
+
+        indices = np.argwhere(labels_2 == unique_label).flatten()
+        ax2.scatter(
+            reduction[indices, 0],
+            reduction[indices, 1],
+            label=unique_label,
+            c= cdict_l2[i],
+            ** kwargs
+        )
+
+    ax2.legend(loc='upper right')
+
+
+    return None
+
+
+
+# not used 
+def heatmap_fig(df: pd.DataFrame, outfile: Path, color_scale: str):
+    """
+    Create a heatmap.
+
+    :param df: List of percentage of features regulated by a factor in \
+    a given spatial cluster
+    :param outfile: The name of the figure to produce
+    :param contrast: (int) the value of the contrast
+    :param color_scale: The name of the color scale
+    """
+    data_array = df.values
+    labelsx = list(df.columns)
+    labelsy = list(df.index)
+    index_side_dic = {l: i for i, l in enumerate(labelsy)}
+    index_up_dic = {l: i for i, l in enumerate(labelsx)}
+    data_up = data_array.transpose()
+    # Initialize figure by creating upper dendrogram
+    fig = ff.create_dendrogram(data_up, orientation='bottom', labels=labelsx,
+                               linkagefun=lambda x: linkage(x, "complete"))
+    for i in range(len(fig['data'])):
+        fig['data'][i]['yaxis'] = 'y2'
+
+    # Create Side Dendrogram
+    dendro_side = ff.create_dendrogram(data_array, orientation='right',
+                                       labels=labelsy,
+                                       linkagefun=lambda x: linkage(x, "complete"))
+    for i in range(len(dendro_side['data'])):
+        dendro_side['data'][i]['xaxis'] = 'x2'
+
+    # Add Side Dendrogram Data to Figure
+    for data in dendro_side['data']:
+        fig.add_trace(data)
+
+
+    # Create Heatmap
+    dendro_side_leaves = dendro_side['layout']['yaxis']['ticktext']
+    fig['layout']['yaxis']['ticktext'] = dendro_side['layout']['yaxis']['ticktext']
+    index_side = [index_side_dic[l] for l in dendro_side_leaves]
+    dendro_up_leaves = fig['layout']['xaxis']['ticktext']
+    heat_data = data_array[index_side, :]
+    index_up = [index_up_dic[l] for l in dendro_up_leaves]
+    heat_data = heat_data[:, index_up]
+
+    if color_scale == "Picnic":
+        heatmap = [
+            go.Heatmap(
+                x=dendro_up_leaves,
+                #y=dendro_side_leaves,
+                z=heat_data,
+                colorbar={"x": -0.05},
+                colorscale=color_scale,
+                zmid=0
+            )
+        ]
+    else:
+        heatmap = [
+            go.Heatmap(
+                x=dendro_up_leaves,
+                y=dendro_side_leaves,
+                z=heat_data,
+                colorbar={"x": -0.05},
+                colorscale=color_scale
+            )
+        ]
+    heatmap[0]['x'] = fig['layout']['xaxis']['tickvals']
+    fig['layout']['yaxis']['tickvals'] = dendro_side['layout']['yaxis']['tickvals']
+    heatmap[0]['y'] = dendro_side['layout']['yaxis']['tickvals']
+
+    #
+    # # Add Heatmap Data to Figure
+    for data in heatmap:
+        fig.add_trace(data)
+
+    # Edit Layout
+    fig['layout'].update({"autosize": True, "height": 1080, "width": 1920,
+                             'showlegend': False, 'hovermode': 'closest',
+                             })
+    # Edit xaxis
+    fig['layout']['xaxis'].update({'domain': [0.15, 0.8],
+                                      'mirror': False,
+                                      'showgrid': False,
+                                      'showline': False,
+                                      'zeroline': False,
+                                      'showticklabels': True,
+                                      'ticks': ""})
+    # Edit xaxis2
+    fig['layout'].update({'xaxis2': {'domain': [0, .15],
+                                        'mirror': False,
+                                        'showgrid': False,
+                                        'showline': False,
+                                        'zeroline': False,
+                                        'showticklabels': False,
+                                        'ticks': ""}})
+
+    # Edit yaxis
+    fig['layout']['yaxis'].update({'domain': [0.11, .85],
+                                      'mirror': False,
+                                      'showgrid': False,
+                                      'showline': False,
+                                      'zeroline': False,
+                                      'showticklabels': True,
+                                      'ticks': "",
+                                      "side": "right"})
+    # Edit yaxis2
+    fig['layout'].update({'yaxis2': {'domain': [.825, 1],
+                                        'mirror': False,
+                                        'showgrid': False,
+                                        'showline': False,
+                                        'zeroline': False,
+                                        'showticklabels': False,
+                                        'ticks': ""}})
+    plotly.offline.plot(fig, filename=str(outfile), auto_open=False)

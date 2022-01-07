@@ -11,7 +11,7 @@ Project Organization
     ├── README.md          <- The top-level README for developers using this project.
     ├── data
     │   ├── external       <- Data from third party sources.
-    │   ├── interim        <- Intermediate data that has been transformed.
+    │   ├── transformed    <- Intermediate data that has been transformed. (after dimension reduction)
     │   ├── processed      <- The final, canonical data sets for modeling.
     │   └── raw            <- The original, immutable data dump.
     │
@@ -43,8 +43,7 @@ Project Organization
     │   │
     │   ├── models         <- Scripts to train models and then use trained models to make
     │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
+    │   │   ├── models.py
     │   │
     │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
     │       └── visualize.py
@@ -92,3 +91,11 @@ Samples are stored rows. attributes of each sample are RNA-Seq gene expression l
 
 ### Source
 Samuele Fiorini, University of Genoa, redistributed under [Creative Commons license](http://creativecommons.org/licenses/by/3.0/legalcode) from [here](https://www.synapse.org/#!Synapse:syn4301332)
+
+
+## Feature selection and Feature extraction 
+Feature selection is the process of choosing precise features, from a features pool.
+Feature extraction is the process of converting the raw data into some other data type, with which the algorithm works is called Feature Extraction. Feature extraction creates a new, smaller set of features that captures most of the useful information in the data.
+The main difference between them is Feature selection keeps a subset of the original features while feature extraction creates new ones.
+
+Feature extraction will be performed via data reduction methods while the feature selection step will be specific to each ML method we are going to test here . 

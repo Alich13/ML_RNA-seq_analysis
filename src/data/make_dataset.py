@@ -2,7 +2,33 @@
 import click
 import logging
 from pathlib import Path
+import pandas as pd
+from src.utils.config import Config
 from dotenv import find_dotenv, load_dotenv
+
+
+def get_data(data_type:str):
+    """
+    this function : 
+        imports data
+        split data into training and test data with respect to the chosen parameters   
+
+    Args:
+        data_type (str): ["original","centered","standardized"] the type of data you want to import 
+
+    Returns:
+        [tuple]: containing (the merged data , features , labels , true labels  )
+    """
+    
+    merged_data= pd.read_csv(Config.data / f"processed/merged_expression_dataset.csv",index_col=0)
+    features=pd.read_csv(Config.data / f"processed/expression_data_{data_type}.csv",index_col=0)
+    labels=pd.read_csv(Config.data / f"processed/labels.csv",index_col=0)
+    true_labels=pd.read_csv(Config.data / f"processed/true_labels.csv",index_col=0)
+
+    return merged_data,features,labels,true_labels
+
+
+
 
 
 @click.command()
@@ -14,6 +40,8 @@ def main(input_filepath, output_filepath):
     """
     logger = logging.getLogger(__name__)
     logger.info('making final data set from raw data')
+
+
 
 
 if __name__ == '__main__':
