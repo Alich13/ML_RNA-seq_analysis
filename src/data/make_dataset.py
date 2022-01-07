@@ -10,8 +10,7 @@ from dotenv import find_dotenv, load_dotenv
 def get_data(data_type:str):
     """
     this function : 
-        imports data
-        split data into training and test data with respect to the chosen parameters   
+        imports data   
 
     Args:
         data_type (str): ["original","centered","standardized"] the type of data you want to import 
@@ -28,7 +27,24 @@ def get_data(data_type:str):
     return merged_data,features,labels,true_labels
 
 
+def get_transformed_data():
+    """
+    this function : 
+        import reduced data
+        
+    Args:
+        
+    Returns:
+        [tuple]: containing (the merged data , features , labels , true labels  )
+    """
+    
 
+    HGV= pd.read_csv(Config.data / f"transformed/expression_data_HVG_1000.csv",index_col=0)
+    PCA=pd.read_csv(Config.data / f"transformed/PCA_reduction.csv",index_col=0)
+    UMAP=pd.read_csv(Config.data / f"transformed/UMAP_reduction.csv",index_col=0)
+    TSNA=pd.read_csv(Config.data / f"transformed/TSNA_reduction.csv",index_col=0)
+
+    return HGV,PCA,UMAP,TSNA 
 
 
 @click.command()
