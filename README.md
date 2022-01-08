@@ -99,3 +99,22 @@ Feature extraction is the process of converting the raw data into some other dat
 The main difference between them is Feature selection keeps a subset of the original features while feature extraction creates new ones.
 
 Feature extraction will be performed via data reduction methods while the feature selection step will be specific to each ML method we are going to test here . 
+
+## DNN
+Model: "model"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+input_1 (InputLayer)         [(None, 100)]             0         
+_________________________________________________________________
+dense (Dense)                (None, 80)                8080      
+_________________________________________________________________
+dense_1 (Dense)              (None, 30)                2430      
+_________________________________________________________________
+dense_2 (Dense)              (None, 8)                 248       
+_________________________________________________________________
+dense_3 (Dense)              (None, 5)                 45        
+=================================================================
+Total params: 10,803
+Trainable params: 10,803
+Non-trainable params: 0
