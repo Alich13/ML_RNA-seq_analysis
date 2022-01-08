@@ -1,0 +1,25 @@
+digraph Tree {
+node [shape=box, fontname="helvetica"] ;
+edge [fontname="helvetica"] ;
+0 [label="c1 <= 26.31\ngini = 0.751\nsamples = 600\nvalue = [233, 57, 105, 109, 96]"] ;
+1 [label="c1 <= -28.614\ngini = 0.679\nsamples = 492\nvalue = [233, 57, 105, 1, 96]"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+2 [label="gini = 0.0\nsamples = 105\nvalue = [0, 0, 105, 0, 0]"] ;
+1 -> 2 ;
+3 [label="c2 <= -13.806\ngini = 0.554\nsamples = 387\nvalue = [233, 57, 0, 1, 96]"] ;
+1 -> 3 ;
+4 [label="c1 <= -1.484\ngini = 0.468\nsamples = 153\nvalue = [0, 57, 0, 0, 96]"] ;
+3 -> 4 ;
+5 [label="gini = 0.0\nsamples = 57\nvalue = [0, 57, 0, 0, 0]"] ;
+4 -> 5 ;
+6 [label="gini = 0.0\nsamples = 96\nvalue = [0, 0, 0, 0, 96]"] ;
+4 -> 6 ;
+7 [label="c1 <= 13.234\ngini = 0.009\nsamples = 234\nvalue = [233, 0, 0, 1, 0]"] ;
+3 -> 7 ;
+8 [label="gini = 0.0\nsamples = 233\nvalue = [233, 0, 0, 0, 0]"] ;
+7 -> 8 ;
+9 [label="gini = 0.0\nsamples = 1\nvalue = [0, 0, 0, 1, 0]"] ;
+7 -> 9 ;
+10 [label="gini = 0.0\nsamples = 108\nvalue = [0, 0, 0, 108, 0]"] ;
+0 -> 10 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+}
