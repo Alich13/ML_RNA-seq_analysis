@@ -19,7 +19,31 @@ def main():
 
     print ("Please Wait , all the commands will be executed in a moment\n \
         All models accuracy scores will be displayed here\n \
-        All the figures will be generated in 'reports/figures/generated'\n  ")
+        All the figures will be generated in 'reports/figures/generated'\n \
+        .\n \
+        . \
+        . \
+        . \
+        . \
+        . \
+        . \
+        . \
+        . \
+        . \
+        We are proccessing and importing data ------>  please wait ")
+
+
+
+    #-----------------------------------------------#
+    #--------precess data Process Data-----#
+    #-----------------------------------------------#
+
+    make_dataset.process_data()
+    labled_data_set_sd,expression_level_sd,labels,true_labels= make_dataset.get_data("standardized")
+    
+    HGV,PCA,UMAP,TSNA = make_dataset.get_transformed_data()
+
+    print ("#________________ processing _____________#  done !!  ")
 
     #-----------------------------------------------#
     #----------------Import Data--------------------#
@@ -29,18 +53,6 @@ def main():
     labels_array= labels["Class"].values
 
     print ("#________________ Data importation _____________#  done !!  ")
-
-
-    #-----------------------------------------------#
-    #--------Import precessed data Process Data-----#
-    #-----------------------------------------------#
-
-
-    labled_data_set_sd,expression_level_sd,labels,true_labels= make_dataset.get_data("standardized")
-    
-    HGV,PCA,UMAP,TSNA = make_dataset.get_transformed_data()
-
-    print ("#________________ processing _____________#  done !!  ")
 
     #-----------------------------------------------#
     #----------------explore Data--------------------#
