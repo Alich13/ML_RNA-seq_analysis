@@ -9,6 +9,8 @@ from sklearn.metrics import accuracy_score , confusion_matrix ,ConfusionMatrixDi
 from scipy.cluster.hierarchy import fcluster, linkage
 from sklearn.model_selection import train_test_split
 
+from src.utils.config import Config
+
 
 
 def get_number_of_clusters(data:np.array):
@@ -33,12 +35,13 @@ def get_number_of_clusters(data:np.array):
         kmean_.fit(data)
         WCSS.append(kmean_.inertia_)
     ## plot
-    plt.figure(figsize=(20,10))
+    plt.figure(figsize=(12,7))
     plt.plot(range(1,10),WCSS,marker='o',linestyle='--')
     plt.xlabel("number of clusters")
     plt.ylabel("WCSS")
     plt.title("")
     plt.show()
+    plt.savefig(Config.project_dir /"reports/figures/generated/wcss.png")
 
 
 
@@ -62,13 +65,15 @@ def random_k_samples_expression_dist(X:np.array ,k :int):
 
 
     # Bar plot of expression counts by individual
-    fig, ax = plt.subplots(figsize=(30, 15))
+    fig, ax = plt.subplots(figsize=(12, 7))
     with plt.style.context("ggplot"):
         ax.boxplot(expression_levels_subset.transpose())
         ax.set_xlabel("samples")
         ax.set_ylabel("Gene expression levels")
         ax.set_title(f"gene exression levels distributions among {k} randomly picked samples " ,fontsize=18)
         #reduce_xaxis_labels(ax, 5)
+    plt.savefig(Config.project_dir /"reports/figures/generated/random_k_samples_expression_dist.png")
+
 
 
 
@@ -160,6 +165,8 @@ def visualize_dim_reduction(reduction, title, outliers_loc=None, labels=None,
         plt.show()
         plt.close()
 
+    plt.savefig(Config.project_dir /f"reports/figures/generated/{title}.png")
+
     return None
 
 
@@ -211,7 +218,7 @@ def visualize_2_subplots(reduction :np.array ,labels_1,labels_2,title,
         )
 
     ax2.legend(loc='upper right')
-
+    plt.savefig(Config.project_dir /"reports/figures/generated/kmeanVSpca.png")
 
     return None
 
@@ -414,9 +421,10 @@ def plot_confusion_matrix(cm,
     plt.ylabel('True label')
     plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
     plt.show()
+    plt.savefig(Config.project_dir /f"reports/figures/generated/{title}.png")
 
 
-def learning_curve(data:pd.DataFrame,labels:np.array,model, range_:list):
+def learning_curve(data:pd.DataFrame,labels:np.array,model,range_:list ,title=" "):
     """[summary]
 
     Args:
@@ -442,3 +450,4 @@ def learning_curve(data:pd.DataFrame,labels:np.array,model, range_:list):
     plt.plot(t, a, 'r') # plotting t, a separately
     plt.plot(t, b, 'b') # plotting t, b separately
     plt.show()
+    plt.savefig(Config.project_dir /f"reports/figures/generated/learning_curve{title}.png")
