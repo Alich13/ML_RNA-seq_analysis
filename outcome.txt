@@ -1,0 +1,86 @@
+#________________ Data importation _____________#  done !!  
+#________________ processing _____________#  done !!  
+#________________ explore data _____________#  done !!  
+#________________ PCA_____________#  done !!  
+#________________ UMAP_____________#  done !!  
+#________________ T-SNE_____________#  done !!  
+------------------KNN on original data---------------------
+original data training Accuracy = 0.9982142857142857
+original data test Accuracy = 0.995850622406639
+Cross validation Accuracy: 0.999 std =(0.004)
+------------------KNN on standardized---------------------
+standardized training Accuracy = 0.9964285714285714
+standardized test Accuracy = 1.0
+Cross validation Accuracy: 0.994 std =(0.010)
+------------------KNN on PCA---------------------
+PCA training Accuracy = 0.9607142857142857
+PCA test Accuracy = 0.9585062240663901
+Cross validation Accuracy: 0.954 std =(0.021)
+------------------KNN on UMAP---------------------
+UMAP training Accuracy = 1.0
+UMAP test Accuracy = 1.0
+Cross validation Accuracy: 1.000 std =(0.000)
+------------------ Decision Tree on original data---------------------
+original data training Accuracy = 1.0
+original data test Accuracy = 0.970954356846473
+Cross validation Accuracy: 0.974 std =(0.016)
+------------------ Decision Tree on standardized---------------------
+standardized training Accuracy = 1.0
+standardized test Accuracy = 0.970954356846473
+Cross validation Accuracy: 0.979 std =(0.019)
+------------------ Decision Tree on PCA---------------------
+PCA training Accuracy = 1.0
+PCA test Accuracy = 0.9253112033195021
+Cross validation Accuracy: 0.930 std =(0.023)
+------------------ Decision Tree on UMAP---------------------
+UMAP training Accuracy = 1.0
+UMAP test Accuracy = 1.0
+Cross validation Accuracy: 1.000 std =(0.000)
+------------------ SVM on original data---------------------
+original data training Accuracy = 1.0
+original data test Accuracy = 0.995850622406639
+Cross validation Accuracy: 0.999 std =(0.004)
+------------------ SVM on standardized---------------------
+standardized training Accuracy = 1.0
+standardized test Accuracy = 1.0
+Cross validation Accuracy: 1.000 std =(0.000)
+------------------ SVM on PCA---------------------
+PCA training Accuracy = 0.9642857142857143
+PCA test Accuracy = 0.9543568464730291
+Cross validation Accuracy: 0.954 std =(0.024)
+------------------ SVM on UMAP---------------------
+UMAP training Accuracy = 1.0
+UMAP test Accuracy = 1.0
+Cross validation Accuracy: 1.000 std =(0.000)
+------------------ Neural Network on Neural Network NN---------------------
+2022-01-09 22:16:24.254312: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE4.1 SSE4.2 AVX AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Model: "model"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+input_1 (InputLayer)         [(None, 100)]             0         
+_________________________________________________________________
+dense (Dense)                (None, 80)                8080      
+_________________________________________________________________
+dense_1 (Dense)              (None, 30)                2430      
+_________________________________________________________________
+dense_2 (Dense)              (None, 5)                 155       
+=================================================================
+Total params: 10,665
+Trainable params: 10,665
+Non-trainable params: 0
+_________________________________________________________________
+WARNING:tensorflow:No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-01-09 22:16:28.164254: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:116] None of the MLIR optimization passes are enabled (registered 2)
+2022-01-09 22:16:28.256569: I tensorflow/core/platform/profile_utils/cpu_utils.cc:112] CPU Frequency: 2799925000 Hz
+-$$$$$$$$$$$$$$$ Neural Network on Neural Network NN ACCURACY----$$$$$$$$$$$$$$$--
+Neural Network NN training Accuracy = 0.9962264150943396
+Neural Network NN test Accuracy = 1.0
+col_0   0   1   2   3   4
+row_0                    
+0      45   0   0   0   0
+1       0  46   1   0   0
+2       0   0  99   0   0
+3       0   0   0  48   0
+4       0   0   0   0  26
