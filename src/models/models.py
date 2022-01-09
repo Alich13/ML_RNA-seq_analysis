@@ -25,12 +25,16 @@ from src.data import make_dataset
 from src.features import build_features
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.tree import plot_tree
+import keras
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LeakyReLU
 from tensorflow.keras.layers import BatchNormalization
 from tensorflow.keras.utils import plot_model
+
+encoder_path=Config.project_dir/ 'models/encoder.h5'
+
 
 
 def KNN(X,Y,description:str):
@@ -59,7 +63,7 @@ def KNN(X,Y,description:str):
     return model
 
 
-def DT(X,Y,description:str):
+def DT(X,Y,description:str, plot_ =False):
 
     print (f"------------------ Decision Tree on {description}---------------------")
 
@@ -80,12 +84,12 @@ def DT(X,Y,description:str):
     # report performance
     print('Cross validation Accuracy: %.3f std =(%.3f)' % (np.mean(scores), np.std(scores)))
 
+    if plot_ ==True :
 
-    plt.figure(figsize=(30,15))
-    plot_tree(model, filled=True)
-    plt.title("Decision tree trained on all the features")
-    plt.savefig(Config.project_dir /f"reports/figures/generated/tree{description}.png")
-    
+        plot_tree(model, filled=True)
+        plt.title("Decision tree trained on all the features")
+        plt.savefig(Config.project_dir /f"reports/figures/generated/tree_{description}.png")
+        
 
     return model
 
@@ -110,12 +114,6 @@ def SVM(X,Y,description:str):
     # report performance
     print('Cross validation Accuracy: %.3f std =(%.3f)' % (np.mean(scores), np.std(scores)))
 
-
-    plt.figure(figsize=(30,15))
-    plot_tree(model, filled=True)
-    plt.title("Decision tree trained on all the features")
-    plt.savefig(Config.project_dir /f"reports/figures/generated/tree{description}.png")
-    plt.show()
 
     return model
 
@@ -180,8 +178,14 @@ def encoder(X_train, X_test, factor ):
     output = Dense(n_inputs, activation='linear')(d)
     # define autoencoder model
     model = Model(inputs=visible, outputs=output)
+    optimizer = keras.optimizers.Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+
+    model.compile(optimizer=optimizer,
+                loss='sparse_categorical_crossentropy',
+                metrics=['accuracy'])
+
     # compile autoencoder model
-    model.compile(optimizer='adam', loss='mse')
+    model.compile(optimizer=optimizer, loss='mse')
     # plot the autoencoder
     plot_model(model, Config.project_dir / 'reports/figures/autoencoder_no_compress.png', show_shapes=True)
 
@@ -197,10 +201,17 @@ def encoder(X_train, X_test, factor ):
     return history
 
 
-encoder_path=Config.project_dir/ 'models/encoder.h5'
 
-def DNN (X ,labels_array:np.array,description:str ,encode_path=encoder_path ):    
 
+def DNN (X ,labels_array:np.array,description:str ,encode_path=encoder_path ):
+    """[summary]
+
+    Args:
+        X ([type]): [description]
+        labels_array (np.array): [description]
+        description (str): [description]
+        encode_path ([type], optional): [description]. Defaults to encoder_path.
+    """
     print (f"------------------ Neural Network on {description}---------------------")
     
     Y_encoded = []

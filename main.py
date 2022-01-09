@@ -17,6 +17,10 @@ from src.models import models
 
 def main():
 
+    print ("Please Wait , all the commands will be executed in a moment\n \
+        All models accuracy scores will be displayed here\n \
+        All the figures will be generated in 'reports/figures/generated'\n  ")
+
     #-----------------------------------------------#
     #----------------Import Data--------------------#
     #-----------------------------------------------#

@@ -9,12 +9,23 @@ Cancer Tumor classification based on RNA-seq_analysis data
 Implementation of Machine learning Algorithms in order to classify tumor samples based on their transcriptomic expression profile
 
 
+
 ## Requirements 
 
 All dependencies can be found in <code> ./requirements.txt </code> . otherwise, to make it simple you can just create a conda environment from  <code>./ML_environment</code> .     
 
 
-    conda env create -f django_environment.yml
+    conda env create -f ML_environment.yml
+
+
+## Quick test 
+a quick test is possible through this simple command . it returns all accuracy scores and regenerates some of the figures but more detailed analysis can be found
+in the <code>notebook</code> folder 
+
+**Please try to run the main script in an external terminal (Not in Visual Studio or pycharm integrated terminal )**
+
+    conda activate ML_env
+    python main.py
 
 
 
