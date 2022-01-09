@@ -1,7 +1,8 @@
 from keras.utils import to_categorical
 from keras.models import Model
 from keras.layers import Dense, Input
-
+from sklearn.svm import SVC
+from tensorflow.keras.models import load_model
 import os
 import pandas as pd
 import seaborn as sns
@@ -10,10 +11,10 @@ import numpy as np
 import seaborn as sns
 import importlib
 
-
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score 
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold ,cross_val_score
+from sklearn.tree import DecisionTreeClassifier
 
 import matplotlib.pyplot as plt
 from sklearn.neighbors import KNeighborsClassifier
@@ -23,14 +24,104 @@ from src.visualization import visualize
 from src.data import make_dataset
 from src.features import build_features
 from sklearn.preprocessing import MinMaxScaler
-
-
+from sklearn.tree import plot_tree
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LeakyReLU
 from tensorflow.keras.layers import BatchNormalization
 from tensorflow.keras.utils import plot_model
+
+
+def KNN(X,Y,description:str):
+
+    print (f"------------------KNN on {description}---------------------")
+
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size = 0.30, random_state = 10 ,shuffle=Y)
+    model=KNeighborsClassifier()
+    model.fit(X_train,Y_train)
+    
+    pred_test=model.predict(X_test)
+    pred_train =model.predict(X_train)
+
+    print(f"{description} training Accuracy = {accuracy_score(Y_train,pred_train)}")
+    print(f"{description} test Accuracy = {accuracy_score(Y_test,pred_test)}")
+
+    #cross validation
+    cv = KFold(n_splits=10, random_state=1, shuffle=True)
+    scores = cross_val_score(model, X, Y, scoring='accuracy', cv=cv, n_jobs=-1)
+
+    # report performance
+    print('Cross validation Accuracy: %.3f std =(%.3f)' % (np.mean(scores), np.std(scores)))
+
+   
+
+    return model
+
+
+def DT(X,Y,description:str):
+
+    print (f"------------------ Decision Tree on {description}---------------------")
+
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size = 0.30, random_state = 10 ,shuffle=Y)
+    model=DecisionTreeClassifier()
+    model.fit(X_train,Y_train)
+    
+    pred_test=model.predict(X_test)
+    pred_train =model.predict(X_train)
+
+    print(f"{description} training Accuracy = {accuracy_score(Y_train,pred_train)}")
+    print(f"{description} test Accuracy = {accuracy_score(Y_test,pred_test)}")
+
+    #cross validation
+    cv = KFold(n_splits=10, random_state=1, shuffle=True)
+    scores = cross_val_score(model, X, Y, scoring='accuracy', cv=cv, n_jobs=-1)
+
+    # report performance
+    print('Cross validation Accuracy: %.3f std =(%.3f)' % (np.mean(scores), np.std(scores)))
+
+
+    plt.figure(figsize=(30,15))
+    plot_tree(model, filled=True)
+    plt.title("Decision tree trained on all the features")
+    plt.savefig(Config.project_dir /f"reports/figures/generated/tree{description}.png")
+    
+
+    return model
+
+def SVM(X,Y,description:str):
+
+    print (f"------------------ SVM on {description}---------------------")
+
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size = 0.30, random_state = 10 ,shuffle=Y)
+    model = SVC(kernel = 'linear', random_state = 10)
+    model.fit(X_train, Y_train) 
+    
+    pred_test=model.predict(X_test)
+    pred_train =model.predict(X_train)
+
+    print(f"{description} training Accuracy = {accuracy_score(Y_train,pred_train)}")
+    print(f"{description} test Accuracy = {accuracy_score(Y_test,pred_test)}")
+
+    #cross validation
+    cv = KFold(n_splits=10, random_state=1, shuffle=True)
+    scores = cross_val_score(model, X, Y, scoring='accuracy', cv=cv, n_jobs=-1)
+
+    # report performance
+    print('Cross validation Accuracy: %.3f std =(%.3f)' % (np.mean(scores), np.std(scores)))
+
+
+    plt.figure(figsize=(30,15))
+    plot_tree(model, filled=True)
+    plt.title("Decision tree trained on all the features")
+    plt.savefig(Config.project_dir /f"reports/figures/generated/tree{description}.png")
+    plt.show()
+
+    return model
+
+
+
+
 
 def init_model():
     """
@@ -105,4 +196,66 @@ def encoder(X_train, X_test, factor ):
 
     return history
 
+
+encoder_path=Config.project_dir/ 'models/encoder.h5'
+
+def DNN (X ,labels_array:np.array,description:str ,encode_path=encoder_path ):    
+
+    print (f"------------------ Neural Network on {description}---------------------")
     
+    Y_encoded = []
+    
+    for i in labels_array :
+        if i == 'PRAD' : Y_encoded.append(0)
+        if i == 'LUAD': Y_encoded.append(1)
+        if i == 'BRCA' : Y_encoded.append(2)
+        if i == 'KIRC': Y_encoded.append(3)
+        if i == 'COAD': Y_encoded.append(4)
+
+    Y_bis = to_categorical(Y_encoded)
+   
+    X_train, X_test, y_train, y_test = train_test_split(X, Y_bis, test_size=0.33, random_state=42,stratify=labels_array)
+    
+    #define the model
+    model = init_model()
+    plot_model(model, to_file=Config.project_dir /f'reports/figures/generated/model_DNN_plot{description}.png', show_shapes=True, show_layer_names=True)
+    
+
+    # load the model from file
+    encoder = load_model(Config.project_dir/ 'models/encoder.h5')
+    # encode the train data
+    X_train_encode = encoder.predict(X_train)
+    # encode the test data
+    X_test_encode = encoder.predict(X_test)
+
+    # fit the model on the training set
+    history=model.fit(X_train_encode,y_train,validation_split=0.33, batch_size=32, epochs=250, verbose=0)
+    
+   
+    # plot loss
+    plt.figure(figsize=(12,7))
+    plt.plot(history.history['loss'], label='train')
+    plt.plot(history.history['val_loss'], label='test')
+
+    plt.title("loss = f(epoch)")
+    plt.xlabel("epoch",fontsize=25)
+    plt.ylabel("Loss",fontsize=25)
+    plt.legend()
+    plt.savefig(Config.project_dir /f'reports/figures/generated/DNN_loss{description}.png')
+
+    #evaluation 
+
+    Z_pred = model.predict(X_test_encode)
+    prediction_test = np.argmax(Z_pred, axis = 1)
+    y_test_not_bis_test = np.argmax(y_test, axis = 1) # test labels encoded [0,1,2,3,4] = [different cancer type]
+
+
+
+    Z_train= model.predict(X_train_encode)
+    prediction_training = np.argmax(Z_train, axis = 1)
+    y_test_not_bis_training = np.argmax(y_train, axis = 1) # test labels encoded [0,1,2,3,4] = [different cancer type]
+
+    print (f"-$$$$$$$$$$$$$$$ Neural Network on {description} ACCURACY----$$$$$$$$$$$$$$$--")
+    print(f"{description} training Accuracy = {accuracy_score(y_test_not_bis_test,prediction_test)}")
+    print(f"{description} test Accuracy = {accuracy_score(y_test_not_bis_training,prediction_training)}")
+    print(pd.crosstab(y_test_not_bis_test,prediction_test))

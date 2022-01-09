@@ -40,8 +40,9 @@ def get_number_of_clusters(data:np.array):
     plt.xlabel("number of clusters")
     plt.ylabel("WCSS")
     plt.title("")
-    plt.show()
     plt.savefig(Config.project_dir /"reports/figures/generated/wcss.png")
+    plt.show()
+    
 
 
 
@@ -158,14 +159,12 @@ def visualize_dim_reduction(reduction, title, outliers_loc=None, labels=None,
 
     if save_dir is not None:
         plt.savefig(
-            f'{save_dir}\\{title}.png'
+            save_dir
         )
         plt.close()
     else:
         plt.show()
         plt.close()
-
-    plt.savefig(Config.project_dir /f"reports/figures/generated/{title}.png")
 
     return None
 
@@ -218,7 +217,6 @@ def visualize_2_subplots(reduction :np.array ,labels_1,labels_2,title,
         )
 
     ax2.legend(loc='upper right')
-    plt.savefig(Config.project_dir /"reports/figures/generated/kmeanVSpca.png")
 
     return None
 
@@ -420,8 +418,9 @@ def plot_confusion_matrix(cm,
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
-    plt.show()
     plt.savefig(Config.project_dir /f"reports/figures/generated/{title}.png")
+    plt.show()
+    
 
 
 def learning_curve(data:pd.DataFrame,labels:np.array,model,range_:list ,title=" "):
@@ -449,5 +448,6 @@ def learning_curve(data:pd.DataFrame,labels:np.array,model,range_:list ,title=" 
     b = testing_accuracy
     plt.plot(t, a, 'r') # plotting t, a separately
     plt.plot(t, b, 'b') # plotting t, b separately
-    plt.show()
-    plt.savefig(Config.project_dir /f"reports/figures/generated/learning_curve{title}.png")
+    plt.savefig(Config.project_dir /f"reports/figures/generated/learning_curve_{title}.png")
+    
+    
