@@ -65,6 +65,7 @@ Project Organization
     │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
     │       └── visualize.py
     |── outcome.txt             <- output of the main.py scripts (all logs , scores ...) 
+    |── main.py                 <- returns all accuracy scores and regenerates some of the figures
     
 
 --------
